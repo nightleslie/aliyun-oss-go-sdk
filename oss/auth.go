@@ -25,9 +25,26 @@ func (conn Conn) signHeader(req *http.Request, canonicalizedResource string) {
 
 	// Give the parameter "Authorization" value
 	req.Header.Set(HTTPHeaderAuthorization, authorizationStr)
+
+	// Set DrsProxyAdminToken Authorization
+	if conn.config.DrsProxyAdminToken != "" {
+		drsProxyAuthStr := conn.getDrsProxyAdminSignedStr(req, canonicalizedResource)
+		req.Header.Set(HTTPHeaderDrsProxyAuthorization, drsProxyAuthStr)
+	}
 }
 
+// get drs proxy signed string based on drs proxy admin token
+func (conn Conn) getDrsProxyAdminSignedStr(req *http.Request, canonicalizedResource string) string {
+	return conn.getSignedStrInternal(req, canonicalizedResource, conn.config.DrsProxyAdminToken)
+}
+
+// get normal oss signed string
 func (conn Conn) getSignedStr(req *http.Request, canonicalizedResource string) string {
+	return conn.getSignedStrInternal(req, canonicalizedResource, conn.config.AccessKeySecret)
+}
+
+// get signed string based on different secret
+func (conn Conn) getSignedStrInternal(req *http.Request, canonicalizedResource, secret string) string {
 	// Find out the "x-oss-"'s address in this request'header
 	temp := make(map[string]string)
 
@@ -54,7 +71,7 @@ func (conn Conn) getSignedStr(req *http.Request, canonicalizedResource string) s
 	contentMd5 := req.Header.Get(HTTPHeaderContentMD5)
 
 	signStr := req.Method + "\n" + contentMd5 + "\n" + contentType + "\n" + date + "\n" + canonicalizedOSSHeaders + canonicalizedResource
-	h := hmac.New(func() hash.Hash { return sha1.New() }, []byte(conn.config.AccessKeySecret))
+	h := hmac.New(func() hash.Hash { return sha1.New() }, []byte(secret))
 	io.WriteString(h, signStr)
 	signedStr := base64.StdEncoding.EncodeToString(h.Sum(nil))
 

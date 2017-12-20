@@ -106,6 +106,7 @@ const (
 	HTTPHeaderOssRequestID                   = "X-Oss-Request-Id"
 	HTTPHeaderOssCRC64                       = "X-Oss-Hash-Crc64ecma"
 	HTTPHeaderOssSymlinkTarget               = "X-Oss-Symlink-Target"
+	HTTPHeaderDrsProxyAuthorization          = "X-Drs-Proxy-Authorization"
 )
 
 // Http Param

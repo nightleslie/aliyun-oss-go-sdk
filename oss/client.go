@@ -792,6 +792,17 @@ func AuthProxy(proxyHost, proxyUser, proxyPassword string) ClientOption {
 	}
 }
 
+//
+// DrsProxyAdminToken 设置访问DrsProxy时签名所需的AdminToken，默认不进行访问DrsProxy的签名
+//
+// token 用于DrsProxy签名的token
+//
+func DrsProxyAdminToken(token string) ClientOption {
+	return func(client *Client) {
+		client.Config.DrsProxyAdminToken = token
+	}
+}
+
 // Private
 func (client Client) do(method, bucketName string, params map[string]interface{},
 	headers map[string]string, data io.Reader) (*Response, error) {

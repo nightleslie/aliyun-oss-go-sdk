@@ -172,6 +172,11 @@ func Origin(value string) Option {
 	return setHeader(HTTPHeaderOrigin, value)
 }
 
+// UserDefineHeader is an option to set user defined header
+func UserDefineHeader(key, value string) Option {
+	return setHeader(key, value)
+}
+
 // Delimiter is an option to set delimiler parameter
 func Delimiter(value string) Option {
 	return addParam("delimiter", value)
